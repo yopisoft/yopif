@@ -28,15 +28,16 @@
 		+ Fromをhashで受けれないバグ修正
 
 =head1 SYNOPSIS
-	
+
+	include_once 'Mail.class.php';
 	$mail  = new CGIToolBox_Mail();
 	$stats = $mail->sendmail(
 		array(
 			'SendmailPath' => '/path/to/sendmail',               # sendmailで送信する場合に指定※省略可
 			'SmtpServer'   => 'mail.domain',                     # SMTPServer
 			'From'         => 'from@domain',                     # 送信元
-			'To'           => array( 'あどみん' => 'to@domain'), # 送信先
-			'Cc'           => array( 'よぴ'     => 'cc@domain'), # Cc送信先  ※省略可
+			'To'           => array('あどみん' => 'to@domain' ), # 送信先
+			'Cc'           => array('よぴ'     => 'cc@domain' ), # Cc送信先  ※省略可
 			'Bcc'          => 'bcc@domain',                      # Bcc送信先 ※省略可
 			'Subject'      => 'Subject',                         # 表題
 			'Body'         => 'Body Text',                       # 本文
@@ -60,18 +61,19 @@
 
 */
 
-class CGIToolBox_Mail{
+class CGIToolBox_Mail
+{
 	
 	var $VERSION    = '2.3';
 	var $SmtpServer = 'localhost';
 	var $Error      = 0;
-	var $Boundary   = 'CGIToolBox_Mail_Boundary';
+	var $Boundary   = 'CGIToolBox_Mail_Boundary_';
 	var $MIMECode   = 'iso-2022-jp';
 	
 	function CGIToolBox_Mail($smtp = 0, $err = ''){
 		if($smtp)      $this->SmtpServer = $smtp;
 		if($err != '') $this->Error = $err;
-		 $this->Boundary = '------------' . md5(uniqid(rand()));
+		$this->Boundary .= md5(uniqid(rand()));
 	}
 
 	// -- メール送信

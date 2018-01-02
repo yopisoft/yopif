@@ -1,10 +1,10 @@
 <?php
 /*
 	PHP - 説明
-	YYYY/MM/DD
+	2018/01/02 13:29
 */
 # Packages ____________________________________________________________________
-include_once 'Mail.class.php';
+include_once 'CGIToolBox_Mail.class.php';
 
 /*
 upload_max_filesize=1024M
@@ -16,8 +16,8 @@ ini_set('memory_limit', '10M');
 */
 
 
-define('NAME', 'New PHP');
-define('VERSION', '0.00');
+const NAME     = 'post.php';
+const VERSION  = '1.00';
 date_default_timezone_set('Asia/Tokyo');
 
 # Config ______________________________________________________________________
@@ -76,9 +76,7 @@ function main(){
 				'KANJICODE'  => 'UTF-8',
 				'SmtpServer' => $Mail[0],
 				'From'       => $Mail[1],
-				//'To'         => array('よぴフォーム' => $Mail[2]),
 				'To'         => $Mail[2],
-				//'Cc'         => array('よぴフォーム' => 'cgi@yopisoft.net'),
 				'Subject'    => $Conf['Subject'],
 				'Body'       => $body,
 				'Port'       => $Mail[3],
@@ -151,10 +149,8 @@ function getUa(){
 }
 
 function getOs($user_agent = ''){
-  if (empty($user_agent)) {
-      // ユーザエージェント
-      $user_agent = $_SERVER['HTTP_USER_AGENT'];
-  }
+	
+  if (empty($user_agent)) $user_agent = $_SERVER['HTTP_USER_AGENT'];
 
   if (preg_match('/Windows NT 10.0/', $user_agent)) {
       $os = 'Windows 10';
