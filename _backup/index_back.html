@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<head>
+<meta content="text/html" charset="UTF-8" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Cache-Control" content="no-cache" />
+<meta charset="utf-8" />
+
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<!-- jQuery library -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- Popper JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+<!-- jQuery Cookie -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+
+
+<title>よぴそふと - フォーム</title>
+
+
+<style>
+h1 a{color:#fff;text-decoration:none;}
+h1 a:hover{color:#1b95e0;}
+nav{background:#333333;color:#eee;padding:10px;}
+
+</style>
+
+<script src="jquery.yopiform.js"></script>
+<script>
+$(function(){
+	$conf = {
+		rows:[
+				{index:'お名前',         name:'name',    placeholder:'お名前', default:'ほげ太'},
+				{index:'メールアドレス', name:'mail',    placeholder:'uname@example.com', default:'uname@example.com'},
+				//{index:'電話',           name:'tel',     placeholder:'000-0000-0000', default:'000-0000-0000'},
+				{index:'お問い合わせ',   name:'comment', placeholder:'1000文字まで', type:'area', height:100, default:'ほげほげ'},
+			],
+		button:{
+				confirm:{name:'buttonConfirm', value:'書くよ。', class:'btn btn-primary'},
+				rewrite:{name:'buttonRewrite', value:'書き直し', class:'btn btn-default'},
+				sendnow:{name:'buttonSendNow', value:'送信決定', class:'btn btn-success'},
+			},
+		send:function(data){
+			console.log(data);
+		},
+		inputheight:40,
+	};
+	
+	start('#myform');
+	
+	// 確認
+	function confirm(targetID, rewrite_flag){
+	
+		var conf = $conf;
+		var rows = conf.rows;
+		
+		for(var i = 0; i < rows.length; i++){
+			var r     = rows[i];
+			var name  = r.name;	
+			var inp   = $(targetID +' [name="'+name+'"]');
+			if(! rewrite_flag){
+				inp.fadeToggle(500, function(){
+					$(this).next('div').text($(this).val()).fadeToggle();
+				});
+			}else{
+				inp.next('div').fadeToggle(500, function(){
+					$(this).prev().fadeToggle();
+				});
+			}
+		}
+		
+		// ボタン表示
+		var btn = $conf.button;
+		for(let k in btn) {
+			var b = btn[k];
+			var tag = $('[name="' + b.name + '"]');
+			tag.hide();
+			if(rewrite_flag){
+				if(k == 'confirm') tag.fadeToggle();
+			}else{
+				if(k == 'rewrite' || k == 'sendnow') tag.fadeToggle();
+			}
+		}
+	}
+
+	// フォームを描く
+	function start(targetID){
+		
+		var conf = $conf;
+		var rows = conf.rows;
+		
+		var formtable = $('<table>').addClass('table').append();
+		var tbody     = $('<tbody>').addClass().append();
+		
+		for(var i = 0; i < rows.length; i++){
+			var r     = rows[i];
+			var index = r.index;
+			var name  = r.name;	
+			var type  = r.type ? r.type : 'text';
+			var pf    = r.placeholder ? r.placeholder : '';
+			var def   = r.default ? r.default : '';
+			var h     = r.height ? r.height : conf.inputheight;
+			
+			var tr  = tbody.append($('<tr>').addClass()); 
+			var th  = $('<th>').css({width:150}).text(index);
+			
+			var inp = $('<input>');
+			if(type == 'area') inp = $('<textarea>').text(def);
+			inp.addClass('form-control')
+			.css({height:h})
+			.attr({
+				type:type, 
+				name:name,
+				placeholder:pf,
+				value:def
+			});
+			var context = $('<div>').css({'min-height':h}).hide();
+			tr.append(th, $('<td>').append(inp, context));
+		}
+		
+		// ボタン作るヤツ
+		var getButton = function(btn){
+			var inp = $('<input>').css({width:150})
+			.addClass(btn.class)
+			.attr({type:'button', name:btn.name, value:btn.value});
+			return inp;
+		};
+		
+		var btn  = $conf.button;
+		var btn1 = getButton(btn.confirm);
+		var btn2 = getButton(btn.rewrite).hide();
+		var btn3 = getButton(btn.sendnow).hide();
+		
+		// 並べて表示
+		var div = $('<div>').addClass('form-group').css({textAlign:'right'}).attr({});
+		var n   = $('<span>').text("\n");
+		div.append(btn2, n, btn1, n, btn3);
+		
+		// 確認
+		btn1.click(function(){confirm(targetID);});
+		
+		// 戻る
+		btn2.click(function(){ confirm(targetID, 1);});
+		
+		// データくれ
+		var getData = function(){
+			data = {};
+			$.map(rows, function(o){
+				var inp   = $(targetID +' [name="' + o.name + '"]');
+				data[o.name] = inp.val();
+				return inp.val();
+			});
+			return data;
+		}
+		
+		// 送信
+		btn3.click(function(){
+			var data = getData();
+			conf.send(data);
+		});
+		
+		// 出力
+		$(targetID).empty();
+		$(targetID).append(formtable.append(tbody), div);
+	}
+	
+	
+	
+});
+</script>
+
+</head>
+<body>
+
+
+<form id="form">
+<nav>
+	<h1><a href="./">フォーム</a></h1>
+</nav>
+<div class="container">
+
+	<div id="myform"></div>
+			
+</div>
+<!-- footer -->
+<footer class="footer container-fluid">
+	<hr>
+	<div style="dispaly:inline-block;float:left;font-size:9pt">
+		(c)よぴそふと <a href="http://yopisoft.net/" target="_blank">http://yopisoft.net/</a>
+	</div>
+	<div style="dispaly:inline-block;float:right;">
+		<a href="https://twitter.com/share" class="twitter-share-button" data-hashtags="zipimage,zipng">Tweet</a>
+		<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+		<a href="https://twitter.com/yopi_soft" class="twitter-follow-button" data-show-count="false">Follow</a>
+		<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+	</div>
+</footer>
+
+</form>
+</body>
+</html>
