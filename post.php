@@ -1,7 +1,9 @@
 <?php
 /*
-	PHP - 説明
-	2018/01/02 13:29
+	
+	post.php -- よぴフォームのメール送信くん
+	2018/01/02 (c)よぴそふと http://yopisoft.net/
+	
 */
 # Packages ____________________________________________________________________
 include_once 'CGIToolBox_Mail.class.php';
@@ -28,12 +30,11 @@ $Conf = array(
 	'MsgFile' => 'msg.json',
 	'SeqFile' => 'seq.txt',
 	'MaxLogs' => 100,
-	'Passwd'  => '5rA1nrP1fgH6I',
+	'Passwd'  => '',
 	'Subject' => 'よぴフォームからのメールだよ'
 );
 
 $Mail = array('smtp.hetemail.jp', 'info@yopisoft.net', 'info@yopisoft.net', 587);
-#$Mail = array('smtp-mail.outlook.com', 'yopisoft@hotmail.com', 'yopisoft@hotmail.com', 587);
 
 # Main ________________________________________________________________________
 main();
@@ -68,10 +69,10 @@ function main(){
 		}
 	}
 	
-	$p['stat'] = 0;
+	$stat = 0;
 	if(1){
 		$mail = new CGIToolBox_Mail();	
-		$p['stat'] = $mail->sendmail(
+		$stat = $mail->sendmail(
 			array(
 				'KANJICODE'  => 'UTF-8',
 				'SmtpServer' => $Mail[0],
@@ -85,13 +86,11 @@ function main(){
 			)
 		);
 	}else{
-		//$p['stat'] = mail('yopisoft@hotmail.com', $Conf['Subject'], $body);
-		$p['stat'] = mail('cgi@yopisoft.net', $Conf['Subject'], $body);
 	}
 	
 	// レスポン酢
 	$r = array(
-		'stat' => $p['stat'],
+		'stat' => $stat,
 		'body' => $body
 	);
 	print json_encode($r, JSON_UNESCAPED_UNICODE);
