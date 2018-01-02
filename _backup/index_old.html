@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<head>
+<meta content="text/html" charset="UTF-8" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Cache-Control" content="no-cache" />
+<meta charset="utf-8" />
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<!-- jQuery library -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- Popper JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+<!-- Bootstrap JavaScript -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+<!-- jQuery Cookie -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<!-- jQuery jpostal -->
+<script src="//jpostal-1006.appspot.com/jquery.jpostal.js" type="text/javascript"></script>
+<!-- jQuery yopiform -->
+<script src="jquery.yopiform.js"></script>
+
+
+<!-- prettify  -->
+<!--script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<link rel="stylesheet" type="text/css" href="google-code-prettify/src/prettify.css">
+<link rel="stylesheet" href="tranquil-heart.min.css"-->
+<link rel="stylesheet" href="prettify.css">
+<script src="./prettify.js"></script>
+<script src="./lang-css.js"></script>
+
+
+<title>よぴそふと - よぴフォーム</title>
+
+
+<style>
+	h1 a{color:#fff; text-decoration:none;}
+	h1 a:hover{color:#1b95e0; text-decoration:none;}
+	h1 div{font-size:12pt;}
+	nav{background:#333333;color:#eee;padding:10px;}
+	
+	.yopif_msg{
+		font-size:18pt;
+	}
+	.yopif_title{font-size:18pt;}
+	.yopif_nn{
+		color:#f0ad4e;
+	}
+	.yopif_err{
+		font-weight:normal;
+		font-size:10pt;
+		background:#EC971F;
+		background:#edeef3;
+		background:#0275d8;
+		color:#000;
+		color:#fff;
+		padding:0.3em 1em;
+	}
+	pre{font-size:9pt;}
+	#form1, #form2, #form3{
+		margin-top:100px;
+	}
+	.hoge {
+		
+		line-height: 2;
+		padding: 1em 0.5em 2em 0.5em;
+	}
+</style>
+
+
+<script>
+$(function(){
+	// バリデーションは自分で書くスタイル…
+	/* 
+		data内容
+		d.val   : 入力内容
+		d.obj   : inputエレメント
+		d.eoj   : エラー表示するdivとかエレメント
+		d.va    : {
+			// バリデーションの種類 
+			nn    : NotNull
+			len   : 最大長さ数値
+			mlen  : 最短長さ数値
+			mail  : メアド 
+			url   : URL
+			zip   : 郵便番号 000-0000 or 0000000
+			kana  : ひらがな
+			kkana : カタカナ
+		};
+	*/
+	var myValid = function(data){
+		var e = [];
+		for(let d of data) {
+			d.eoj.hide();
+			var msg = '';
+			var v  = d.val.replace(/^[\s　]|[\s　]$/g, '');
+			var a  = d.va;
+			//console.log(d);
+			if(a.nn && v == ''){
+				msg = d.idx + '入力が必要です';
+			}else if(v == '' && ! a.nn){
+				continue;
+			}else if(a.len && v.len > a.len){
+				msg = d.idx + 'が長すぎます(' + a.va + '文字まで)';
+			}else if(a.mail &&
+				! v.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.(?:[.a-zA-Z0-9-]+)*$/i)){
+					msg = d.idx + ' っぽくない気がします';
+			}else if(a.url &&
+				! v.match(/^(https?|ftp)(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+)$/)){
+				msg = d.idx + ' っぽくないです';
+			}else if(a.zip && ! v.match(/^(\d{3}-\d{4}|\d{7})$/)){
+				msg = d.idx + ' が郵便番号っぽくないです';
+			}else if(a.kana && !  v.match(/^[\u3040-\u309f]+$/)){
+				msg = d.idx + ' はひらがなのみでご記入ください';
+			}else if(a.kkana && !  v.match(/^[\u30a0-\u30ff]+$/)){
+				msg = d.idx + ' はカタカナのみでご記入ください';
+			}
+	
+			if(msg){
+				e.push(msg);
+				var fa = '<i class="fa fa-commenting"> ' +msg+ '</i>';
+				d.eoj.html(fa).slideDown();
+			}
+		};
+		return e.length ? false : true;
+	};
+	
+	// 送信
+	var mySend = function(data){
+		
+	
+	};
+
+	
+	$('#form0').yopiForm(
+		['お名前', 'メールアドレス', 'お問い合わせ']
+	);
+	
+	$('#form1').yopiForm(
+		['*お名前', '*ふりがな', 'メールアドレス', '*お問い合わせ'],
+		{
+			title      : '必須項目は頭に*を付けるダケ', 
+			valid      : myValid,
+		}
+	);
+
+	$('#form2').yopiForm(
+		['*お名前', '*カスタム', 'カスタム２', 'カスタム３', '*お問い合わせ'], 
+		{
+			'カスタム'   : {index:'カスタム', name:'c1'},
+			'カスタム２' : {index:'カスタム２', name:'c2', type:'password'},
+			'カスタム３' : {index:'カスタム３', name:'c3', placeholder:'カスタム３', default:'デフォ値'},
+			title:'カスタムインプットの追加も簡単',
+			valid:myValid
+		}
+	);
+	
+	$('#form3').yopiForm([], {
+		title:'デフォルトパーツ全部',
+		nnall:true,
+		valid:myValid
+	});
+	
+	prettyPrint();
+	
+});
+</script>
+
+</head>
+<body>
+
+
+<form id="form">
+<nav style="text-align:center">
+  <h1>
+  	<a href="./">
+  		よぴフォーム
+  	<div>yopiFome - A JavaScript jQuery plugin for generating html form</div>
+  	</a>
+  </h1>
+</nav>
+
+<div class="container" style="margin-top:2em;">
+<h2>これはなに？</h2>
+<div class="hoge">
+お問い合わせフォームをヲタとかハッカーじゃなくても３分で作れるjQueryプラグイン。<br />
+なんでもイイと言われても…テーブル書いたりinput書いたりするのにくたびれました。<br />
+
+Javascriptに覚えがあれば簡単にカスタマイズできるシンプル構造。<br />
+バリデーションはあえて（めんどくさいから）内臓していないシンプル構造。<br />
+メール送信やデータ保存の部分はあえて（お金もらえなくなっちゃうから）内臓していないシンプル構造。<br />
+まだ調整中。<br />
+</div>
+
+<h2>DEMO</h2>
+
+<div id="form0"></div>
+
+<pre class="prettyprint linenums:1">
+
+$('#form0').yopiForm(
+  ['お名前', 'メールアドレス', 'お問い合わせ']
+);
+
+</pre>
+空のdiv用意してほしい項目名を入れるダケでフォームになっちゃうのです。
+
+<div id="form1"></div>
+
+<pre class="prettyprint linenums:1">
+
+$('#form1').yopiForm(
+  ['*お名前', '*ふりがな', 'メールアドレス', '*お問い合わせ'],
+  {
+    title      : '必須項目は頭に*を付けるダケ', 
+    valid      : myValid,
+  }
+);
+
+</pre>
+入力必須は頭に*付ける直感的コンフィグ。valid : myValid は入力チェックの有効化。
+
+<div id="form2"></div>
+<pre class="prettyprint linenums:1">
+
+$('#form2').yopiForm(
+  ['*お名前', '*カスタム', 'カスタム２', 'カスタム３', '*お問い合わせ'], 
+  {
+    'カスタム'   : {index:'カスタム', name:'c1'},
+    'カスタム２' : {index:'カスタム２', name:'c2', type:'password'},
+    'カスタム３' : {index:'カスタム３', name:'c3', placeholder:'カスタム３', default:'デフォ値'},
+    title:'カスタムインプットの追加も簡単',
+    valid:myValid
+  }
+);
+
+</pre>
+自分好みの入力欄もポコポコ足せる。
+
+<div id="form3"></div>
+<pre class="prettyprint linenums:1">
+
+$('#form3').yopiForm([], {
+  title:'よぴフォームデフォルトパーツ全部',
+  nnall:true,
+  valid:myValid
+});
+
+</pre>
+デフォルトで内臓しているインプットパーツ（調整中）<br />
+郵便番号から住所入力もできますよ。<br />
+
+<h2 style="margin-top:64px;">追加予定</h2>
+<div class="hoge">
+リアルタイムの入力チェック<br />
+都道府県とかプルダウン<br />
+メールアドレスやパスワード確認入力<br />
+ラジオ、チェックボックス<br />
+ファイル添付<br />
+</div>
+</div>
+
+<hr>
+
+<!-- footer -->
+<div style="clear:both; display:table; width:100%; padding:0.5em 1em 2em 1em;">
+	<div style="display:table-cell; vertical-align:middle; font-size:9pt; white-space:nowrap;">
+		&copy; よぴそふと <a href="http://yopisoft.net/" title="よぴそふとへ" target="_blank">http://yopisoft.net/</a>
+	</div>
+	<div style="display:table-cell; vertical-align:middle; text-align:right;">
+			<a href="https://twitter.com/share" class="twitter-share-button" data-hashtags="">Tweet</a>
+			<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+			<a href="https://twitter.com/yopi_soft" class="twitter-follow-button" data-show-count="false">Follow</a>
+			<iframe src="https://ghbtns.com/github-btn.html?user=yopisoft&type=follow&count=false"
+			allowtransparency="true" frameborder="0" scrolling="0" width="120" height="20"></iframe>	
+	</div>
+</div>
+<!-- /footer -->
+
+</form>
+</body>
+</html>
