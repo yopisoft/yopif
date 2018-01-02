@@ -45,8 +45,8 @@
 		'電話番号':	{index:'電話番号',            name:'tel',    valid:'tel',   length:14,
 				ph:'000-0000-0000',          def:''},
 		
-		'郵便番号':{index:'郵便番号',             name:'zip',    valid:'zip',   type:'zip',
-				ph:'000-0000',               def:'100-0001'},
+		'郵便番号':{index:'郵便番号',  name:'zip', valid:'zip', type:'zip', zbtn:'郵便番号から住所入力', w:'10em',
+				ph:'000-0000',  def:'100-0001'},
 			
 		'性別':	{index:'性別', name:'sex', type:'radio', 
 				ary:['男性', '女性', 'どちらともいえない'], def:'男性'},
@@ -68,6 +68,12 @@
 		'お問い合わせ':{index:'お問い合わせ', name:'comment',  type:'area', length:300,
 				ph:'300文字まで',           def:'', 
 				height:100},
+		
+		
+		'パスワード':	{index:'パスワード', name:'pwd', type:'password', w:'16em', valid:'passwd',
+			length:16, minlength:4,
+			ph:'[0-9a-zA-Z_=#] 4-16文字まで'
+		},
 		
 		/* --------------------------------------------------------------
 			fbtn  : ボタン名
@@ -91,15 +97,16 @@
 	var errMsg = {
 		nn    : '{{idx}} 入力が必要です',
 		len   : '{{idx}} が長すぎます({{len}}文字まで)',
-		mlen  : '{{idx}} が短すぎます({{mlen}}文字まで)',
+		mlen  : '{{idx}} が短すぎます({{mlen}}文字以上)',
 		mail  : '{{idx}} がメールアドレスっぽくない気がします',
 		url   : '{{idx}} がURL形式っぽくないです',
 		zip   : '{{idx}} が郵便番号っぽくないです',
 		kana  : '{{idx}} はひらがなのみでご記入ください',
 		kkana : '{{idx}} はカタカナのみでご記入ください',
 		agree : '{{idx}} をご確認の上チェックをお願いいたします',
-		fsize : '{{idx}} サイズオーバーです ({{fsize}}byteまで)',
-		ftype : '{{idx}} 非対応の形式です'
+		fsize  : '{{idx}} サイズオーバーです ({{fsize}}byteまで)',
+		ftype  : '{{idx}} 非対応の形式です',
+		passwd : '{{idx}} 使用できる文字は[0-9a-zA-Z_=#]だけです'
 	};
 	
 	var _self = {
@@ -239,6 +246,7 @@
 			// 確認ボタン
 			btn1.click(function(){
 				var data = _self.vars($this);
+				console.log(data);
 				var flag = conf.valid(data, $this);
 				
 				if(flag){
@@ -328,9 +336,9 @@
 				eid = 'nn';
 			}else if(v == '' && ! a.nn){
 				eid = '';
-			}else if(a.len && v.len > a.len){
+			}else if(a.len && v.length > a.len){
 				eid = 'len';
-			}else if(a.mlen && v.len < a.mlen){
+			}else if(a.mlen && v.length < a.mlen){
 				eid = 'mlen';
 			}else if(a.mail && ! v.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.(?:[.a-zA-Z0-9-]+)*$/i)){
 				eid = 'mail';
@@ -342,6 +350,8 @@
 				eid = 'kana';
 			}else if(a.kkana && !  v.match(/^[\u30a0-\u30ff]+$/)){
 				eid = 'kkana';
+			}else if(a.passwd && ! v.match(/^[0-9a-zA-Z_=#]+$/)){
+				eid = 'passwd';
 			}
 			if(eid){
 				var tmpl = emsg[eid] ? emsg[eid] : errMsg[eid];
@@ -432,9 +442,7 @@
 				if(r.type == 'password'){
 						inpv = inpv.replace(/./g, '＊'); // パスワード置換
 				}
-				
-				
-				
+
 				val.html(inpv);
 			}
 			if(back_flag){
@@ -464,6 +472,7 @@
 				name         : name, 
 				placeholder  : ph, 
 				maxlength    : len,
+				width:r.w,
 				'data-index' : r.index,
 				'data-type'  : type,
 			};
@@ -477,7 +486,7 @@
 				var zipbtn = $('<input>')
 					.attr({type:'button', name:name+'_button'})
 					.addClass('btn btn-info yopif_zip_btn')
-					.val('住所検索');
+					.val(r.zbtn ? r.zbtn : '住所検索');
 				
 				inp2 = $('<span>').attr({})
 					.addClass('input-group-btn yopif_inp')
@@ -573,8 +582,16 @@
 			
 			}
 			
-			inp.addClass('form-control yopif_inp').css({height:h}).attr(attr);
-			if(inp2) return $('<div>').addClass('input-group').append(inp, inp2);
+			var css = {height:h};
+			if(r.w) $.extend(css, {width:r.w});
+			//$.extend(css, {width:200});
+			inp.addClass('form-control yopif_inp').css(css).attr(attr);
+			if(inp2){
+				return $('<div>')
+				.addClass('input-group')
+				.css(css)
+				.append(inp, inp2);
+			}
 			return inp;
 		},
 	
@@ -594,7 +611,9 @@
 					valid : o.valid ? o.valid : '',
 					va    : {},
 					obj   : null,
-					eobj  : null
+					eobj  : null,
+					len   : o.length,
+					mlen  : o.minlength
 				};
 				r.obj = $('[name="' + o.name + '"]', $this);
 				r.eoj = $('.yopif_err_' + o.name,    $this);
