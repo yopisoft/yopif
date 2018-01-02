@@ -5,6 +5,13 @@
 <meta http-equiv="Cache-Control" content="no-cache" />
 <meta charset="utf-8" />
 
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@yopi_soft" />
+<meta property="og:url" content="http://yopisoft.net/demo/yopif/" />
+<meta property="og:title" content="よぴそふと - よぴフォーム" />
+<meta property="og:description" content="お問い合わせフォームをヲタとかハッカーじゃなくても３分で作れるjQueryプラグイン。なんでもイイと言われても…、そんな時にポチっと設置できるフォームです。" />
+<meta property="og:image" content="http://yopisoft.net/demo/yopif/ss.jpg" />
+
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
 <!-- Font Awesome -->
@@ -90,17 +97,15 @@ $(function(){
 	};
 	
 	// フォーム作る設定 _______________________________________________
-	$('#form0').yopiForm(['お名前', 'メールアドレス', 'お問い合わせ']);
+	$('#form0').yopiForm(
+		['お名前', 'メールアドレス', 'お問い合わせ']
+	);
 
 	
 	$('#form1').yopiForm(
 		['*お名前', '*ふりがな', 'メールアドレス', '*お問い合わせ'],
 		{
 			title      : '必須項目は頭に*を付けるダケ', 
-			errMsg:{
-				nn   : '{{idx}} を入力してね♪',
-				kana : '{{idx}} に変な文字入ってない？',
-			}
 		}
 	);
 
@@ -110,7 +115,7 @@ $(function(){
 			'カスタム'   : {index:'カスタム', name:'c1'},
 			'カスタム２' : {index:'カスタム２', name:'c2', type:'password'},
 			'カスタム３' : {index:'カスタム３', name:'c3', ph:'カスタム３', def:'デフォ値'},
-			title : 'カスタムインプットの追加も簡単',
+			title : 'カスタムインプットの追加も超簡単です',
 		}
 	);
 	
@@ -167,28 +172,26 @@ $('#form0').yopiForm(
 <pre class="prettyprint linenums:1">
 
 $('#form1').yopiForm(
-  ['*お名前', '*ふりがな', 'メールアドレス', '*お問い合わせ'],
-  {
-    title      : '必須項目は頭に*を付けるダケ', 
-    valid      : myValid,
-  }
+	['*お名前', '*ふりがな', 'メールアドレス', '*お問い合わせ'],
+	{
+		title      : '必須項目は頭に*を付けるダケ', 
+	}
 );
 
 </pre>
-入力必須は頭に*付ける直感的コンフィグ。valid : myValid は入力チェックの有効化。
+入力必須は頭に*付けるダケ。
 
 <div id="form2"></div>
 <pre class="prettyprint linenums:1">
 
 $('#form2').yopiForm(
-  ['*お名前', '*カスタム', 'カスタム２', 'カスタム３', '*お問い合わせ'], 
-  {
-    'カスタム'   : {index:'カスタム', name:'c1'},
-    'カスタム２' : {index:'カスタム２', name:'c2', type:'password'},
-    'カスタム３' : {index:'カスタム３', name:'c3', placeholder:'カスタム３', default:'デフォ値'},
-    title:'カスタムインプットの追加も簡単',
-    valid:myValid
-  }
+	['*お名前', '*カスタム', 'カスタム２', 'カスタム３', '*お問い合わせ'], 
+	{
+		'カスタム'   : {index:'カスタム', name:'c1'},
+		'カスタム２' : {index:'カスタム２', name:'c2', type:'password'},
+		'カスタム３' : {index:'カスタム３', name:'c3', ph:'カスタム３', def:'デフォ値'},
+		title : 'カスタムインプットの追加も超簡単です',
+	}
 );
 
 </pre>
@@ -198,9 +201,8 @@ $('#form2').yopiForm(
 <pre class="prettyprint linenums:1">
 
 $('#form3').yopiForm([], {
-  title:'よぴフォームデフォルトパーツ全部',
-  nnall:true,
-  valid:myValid
+	title : 'デフォルトパーツ全部',
+	send  : mailSend
 });
 
 </pre>

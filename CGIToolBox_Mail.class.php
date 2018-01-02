@@ -1,5 +1,8 @@
 <?php
 /*
+	CGIToolBox_Mail -- メール送信クラス
+	2018/01/02 (c)よぴそふと http://yopisoft.net/
+
 =pod
 =head1 NAME
 	
