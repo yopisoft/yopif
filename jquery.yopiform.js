@@ -425,10 +425,16 @@
 				// 確認用詰める
 				var inpv  = inp.val();
 				inpv = (inpv !== undefined) ? inpv : '';
-				
 				inpv = inpv.replace(/^[\s　]+|[\s　]+$/g, ''); // スペース消し
 				inpv = _self.escape_html(inpv);                // HTMLタグ消し
 				inpv = inpv.replace(/\n/g, '<br />');          // 改行はBR
+				
+				if(r.type == 'password'){
+						inpv = inpv.replace(/./g, '＊'); // パスワード置換
+				}
+				
+				
+				
 				val.html(inpv);
 			}
 			if(back_flag){
@@ -563,7 +569,7 @@
 			
 				// 通常
 				inp = $('<input>');
-				$.extend(attr, { type:'TEXT', value:def });
+				$.extend(attr, { type:type.toUpperCase(), value:def });
 			
 			}
 			
