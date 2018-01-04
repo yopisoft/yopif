@@ -310,7 +310,8 @@
 		validation : function(data, _this){
 			var conf  = $(_this).data('conf');
 			var e = [];
-			for(let d of data) {
+			//for(let d of data) {
+			$.map(data, function(d, i){
 				d.eoj.hide();
 				var r = _self.valiRow(d, conf.errMsg);
 				if(r.msg){
@@ -319,7 +320,7 @@
 					fa = conf.errtmpl.replace(/{{msg}}/g, r.msg);
 					d.eoj.html(fa).slideDown();
 				}
-			}
+			});
 			return e.length ? 0 : 1;
 		},
 		
@@ -625,7 +626,8 @@
 					len  : o.length ? o.length : conf.defaultlength,
 					mlen : o.minlength ? o.minlength : ''
 				};
-				for(var v of ary){ r.va[v] = true; }
+				//for(var v of ary){ r.va[v] = true; }
+				$.map(ary, function(v){r.va[v] = true;});
 				
 				// 入力内容
 				if(o.type == 'checkbox' || o.type == 'radio')
