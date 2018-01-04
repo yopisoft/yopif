@@ -6,6 +6,9 @@
 	yopiForm uses
 		jpostal 
 			https://github.com/ninton/jquery.jpostal.js/blob/master/README.txt
+	
+	HISTRY
+		2018/01/04 20:22 - IE11で動かなかった対応
 			
 */
 
